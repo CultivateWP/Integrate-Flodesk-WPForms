@@ -14,7 +14,7 @@ Create Flodesk signup forms using WPForms
 
 [Flodesk](https://flodesk.com/c/63SZN2) lets you design beautiful emails and create high converting checkout pages.
 
-This Plugin integrates WPForms with Flodesk, allowing form submissions to be automatically sent to your Flodesk account.
+This Plugin integrates [WPForms](https://cultivatewp.com/go/wpforms/) with [Flodesk](https://flodesk.com/c/63SZN2), allowing form submissions to be automatically sent to your Flodesk account.
 
 Full plugin documentation is located [here](https://cultivatewp.com/plugins/integrate-flodesk-wpforms).
 
