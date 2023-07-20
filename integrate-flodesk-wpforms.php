@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Integrate Flodesk and WPForms
- * Plugin URI:  https://cultivatewp.com/plugins/integrate-flodesk-wpforms
+ * Plugin URI:  https://cultivatewp.com/our-plugins/integrate-flodesk-wpforms/
  * Description: Create Flodesk signup forms using WPForms
  * Version:     1.0.0
  * Author:      CultivateWP
