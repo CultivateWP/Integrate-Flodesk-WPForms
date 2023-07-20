@@ -22,6 +22,8 @@ Full plugin documentation is located [here](https://cultivatewp.com/plugins/inte
 
 Yes, you'll need a Flodesk Email account which is $35/month for unlimited emails and subscribers. When you [sign up](https://flodesk.com/c/63SZN2) you get one month free, so you can test Flodesk and this plugin for one month with no credit card required.
 
+You can use the free [WPForms Lite](https://wordpress.org/plugins/wpforms-lite/) plugin, but we recommend using a [paid version of WPForms](https://cultivatewp.com/go/wpforms/) so you'll have a saved copy of all submissions on your site in case there's an issue with your API connection.
+
 ## Screenshots
 
 ![api settings](https://p198.p4.n0.cdn.getcloudapp.com/items/6quJGvGg/e7532d5d-8d27-4318-8953-9cc72748600a.jpg?source=viewer&v=1f2e102c74c04433f77e0e0e527cbe06)
