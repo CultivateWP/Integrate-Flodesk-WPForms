@@ -24,7 +24,7 @@ Yes, you'll need a Flodesk Email account which is $35/month for unlimited emails
 
 ## Screenshots
 
-![api settings](https://p198.p4.n0.cdn.getcloudapp.com/items/d5uDn6Dk/1d247aaa-2385-47e5-b126-f2e270cb7fb1.jpg?source=viewer&v=ae9bda081a66e3af0d3ec6e90718e9aa)
+![api settings](https://p198.p4.n0.cdn.getcloudapp.com/items/6quJGvGg/e7532d5d-8d27-4318-8953-9cc72748600a.jpg?source=viewer&v=1f2e102c74c04433f77e0e0e527cbe06)
 WPForms Flodesk API Connections at WPForms > Settings > Integrations > Flodesk
 
 ![form settings](https://p198.p4.n0.cdn.getcloudapp.com/items/wbuLQ8Ln/07ea331a-b157-4fd8-8867-c1356cc4bb68.jpg?source=viewer&v=cf5c86d94ef1281689ff8c0471352c82)
