@@ -15,13 +15,22 @@
 class Integrate_Flodesk_WPForms extends WPForms_Provider {
 
     /**
+	 * Holds API connections to Flodesk.
+	 *
+	 * @since   1.1.0
+	 *
+	 * @var     array
+	 */
+	public $api = array();
+
+    /**
      * API URL
      * 
      * @since 1.0.0
      * 
      * @var string
      */
-    private $api_url = 'https://api.flodesk.com/v1/subscribers';
+    private $api_url = 'https://api.flodesk.com/v1/';
 
     /**
      * API Args
@@ -86,7 +95,7 @@ class Integrate_Flodesk_WPForms extends WPForms_Provider {
 	 * @param   array $form_data Form data and settings.
 	 * @param   int   $entry_id  Saved entry ID.
 	 */
-	public function process_entry( $fields, $entry, $form_data, $entry_id = 0 ) { 
+	public function process_entry( $fields, $entry, $form_data, $entry_id = 0 ) {
 
 		// Only run if this form has a connection for this provider.
 		if ( empty( $form_data['providers'][ $this->slug ] ) ) {
@@ -138,8 +147,8 @@ class Integrate_Flodesk_WPForms extends WPForms_Provider {
 			if ( ! empty( $providers[ $this->slug ][ $connection['account_id'] ]['api'] ) ) {
 				$args = $this->api_args( $providers[ $this->slug ][ $connection['account_id'] ]['api'] );
 				$args['body'] = json_encode( $body );
-				$response = wp_remote_post( $this->api_url, $args );
-			
+
+                $response = wp_remote_post( $this->api_url . 'subscribers', $args );
 
 				// If the API response is an error, log it as an error.
 				if ( is_wp_error( $response ) ) {
@@ -263,7 +272,9 @@ class Integrate_Flodesk_WPForms extends WPForms_Provider {
 	 * @return mixed id or error object
 	 */
 	public function api_auth( $data = [], $form_id = '' ) {
-        $request = wp_remote_get( $this->api_url, $this->api_args( $data['apikey'] ) );
+
+        $request = wp_remote_get( $this->api_url . 'subscribers', $this->api_args( $data['apikey'] ) );
+
         if ( 200 !== wp_remote_retrieve_response_code( $request ) ) {
             wpforms_log(
 				'Flodesk API error',
@@ -356,8 +367,46 @@ class Integrate_Flodesk_WPForms extends WPForms_Provider {
 	 * @return mixed array or error object.
 	 */
 	public function api_groups( $connection_id = '', $account_id = '', $list_id = '' ) {
-        return [];
-    }
+		$groupsets = [
+			'groupset' => [
+				'name'   => "Groupset_{$list_id}",
+				'id'     => "ID_{$list_id}",
+				'groups' => []
+			]
+		];
+        if( empty( $account_id ) ) return $this->error( 'Problem retrieving groups. No account ID set.' );
 
+        $providers = get_option( 'wpforms_providers', [] );
+        $args = $this->api_args( $providers[ $this->slug ][ $account_id ]['api'] );
+        $response = wp_remote_get( "{$this->api_url}segments", $args );
+        if( is_wp_error( $response ) ) {
+            wpforms_log(
+                'Flodesk',
+                sprintf(
+                    'API Error: %s',
+                    $response->get_error_message()
+                ),
+                array(
+                    'type'    => array( 'group', 'error' )
+                )
+            );
+
+            return [];
+        }
+        if( empty( $response['body'] ) ) return [];
+        if( 'string' !== gettype( $response['body'] ) ) return [];
+        $group_results = json_decode( $response['body'] );
+        if( empty( $group_results->data ) ) return [];
+        if( 'array' !== gettype( $group_results->data ) ) return [];
+
+        foreach( $group_results->data as $group_row ) {
+	        $groupsets['groupset']['groups'][] = [
+		        'id'   => $group_row->id,
+		        'name' => $group_row->name
+	        ];
+        }
+
+        return $groupsets;
+	}
 }
 new Integrate_Flodesk_WPForms();
