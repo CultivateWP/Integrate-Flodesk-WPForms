@@ -102,6 +102,7 @@ class Integrate_Flodesk_WPForms extends WPForms_Provider {
 			return;
 		}
 
+        $flodesk_fields = [ 'first_name', 'last_name', 'name', 'email' ];
 
 		// Iterate through each Flodesk connection.  A WPForms Form can have one or more
 		// connection to a provider (i.e. Flodesk) configured at Marketing > Flodesk.
@@ -109,9 +110,12 @@ class Integrate_Flodesk_WPForms extends WPForms_Provider {
 
 			// Iterate through the WPForms Form field to Flodesk field mappings, to build
 			// the API query to subscribe to the Flodesk Form.
-			$body = array();
+			$body = [
+                'custom_fields' => []
+            ];
+
 			foreach ( $connection['fields'] as $flodesk_field => $wpforms_field ) {
-				// Skip if no Flodesk mapping specified for this WPForms Form field.
+                // Skip if no Flodesk mapping specified for this WPForms Form field.
 				if ( empty( $wpforms_field ) ) {
 					continue;
 				}
@@ -119,20 +123,20 @@ class Integrate_Flodesk_WPForms extends WPForms_Provider {
 				// Fetch the field's value from the WPForms Form entry.
 				$value = $this->get_entry_field_value( $wpforms_field, $fields );
 
+                // Handle any forms set to custom fields in Flodesk
+                if( str_starts_with( $flodesk_field, "custom_" ) ) {
+                    if( empty( $value ) ) continue;
+                    $property_name = substr( $flodesk_field, 7 );
+                    $body['custom_fields'][$property_name] = $value;
+                }
+
 				// Depending on the field name, store the value in the $args array.
-				switch ( $flodesk_field ) {
-					/**
-					 * Email
-					 * Name
-					 */
-					case 'email':
-					case 'name':
-						$body[ $flodesk_field ] = $value;
-						break;
-				}
+                if( in_array( $flodesk_field, $flodesk_fields ) ) {
+                    $body[ $flodesk_field ] = $value;
+                }
 			}
 
-			// Skip if no email address field was mapped.
+            // Skip if no email address field was mapped.
 			if ( ! array_key_exists( 'email', $body ) ) {
 				continue;
 			}
@@ -150,7 +154,7 @@ class Integrate_Flodesk_WPForms extends WPForms_Provider {
 
                 $response = wp_remote_post( $this->api_url . 'subscribers', $args );
 
-				// If the API response is an error, log it as an error.
+                // If the API response is an error, log it as an error.
 				if ( is_wp_error( $response ) ) {
 					wpforms_log(
 						'Flodesk',
@@ -167,6 +171,17 @@ class Integrate_Flodesk_WPForms extends WPForms_Provider {
 
 					return;
 				}
+
+                // Add segments to the user.
+                if( ! empty( $connection['groups'] ) ) {
+                    $response_array = json_decode( $response['body'] );
+                    $subscriber_id = $response_array->id;
+                    $this->add_user_to_segments(
+                        $providers[ $this->slug ][ $connection['account_id'] ]['api'],
+                        $subscriber_id,
+                        $connection['groups'],
+                        $form_data['id'] );
+                }
 
 				// Log successful API response.
 				wpforms_log(
@@ -224,7 +239,6 @@ class Integrate_Flodesk_WPForms extends WPForms_Provider {
 	 */
 	public function integrations_tab_new_form() {
 
-        
 		printf(
 			'<input type="text" name="apikey" placeholder="%s">',
 			sprintf(
@@ -333,6 +347,18 @@ class Integrate_Flodesk_WPForms extends WPForms_Provider {
 				'tag'        => 'last_name',
 			),
 		);
+
+        $custom_fields = $this->api_custom_fields( $connection_id, $account_id, $list_id );
+        if( ! empty( $custom_fields ) ) {
+            foreach( $custom_fields as $custom_field ) {
+	            $provider_fields[] = [
+		            'name'       => __( "Custom: {$custom_field['label']}", 'integrate-flodesk-wpforms' ),
+		            'field_type' => 'text',
+		            'tag'        => $custom_field['key']
+	            ];
+            }
+        }
+
         return $provider_fields;    
 	}
 
@@ -408,5 +434,110 @@ class Integrate_Flodesk_WPForms extends WPForms_Provider {
 
         return $groupsets;
 	}
+
+	/**
+     * Retrieve custom fields for a provider account.
+     *
+	 * @param $connection_id
+	 * @param $account_id
+	 * @param $list_id
+	 *
+	 * @return array|WP_Error
+	 */
+    public function api_custom_fields( $connection_id = '', $account_id = '', $list_id = '' ) {
+        $custom_fields = [];
+        if( empty( $account_id ) ) return $this->error( 'Problem retrieving custom fields. No account ID set.' );
+
+        $providers = get_option( 'wpforms_providers', [] );
+        $args = $this->api_args( $providers[ $this->slug ][ $account_id ]['api'] );
+        $response = wp_remote_get( "{$this->api_url}custom-fields", $args );
+        if( is_wp_error( $response ) ) {
+            wpforms_log(
+                'Flodesk',
+                sprintf(
+                    'API Error: %s',
+                    $response->get_error_message()
+                ),
+                array(
+                    'type'    => array( 'custom-fields', 'error' )
+                )
+            );
+
+            return [];
+        }
+
+        if( empty( $response['body'] ) ) return [];
+        if( 'string' !== gettype( $response['body'] ) ) return [];
+        $custom_field_results = json_decode( $response['body'] );
+        if( empty( $custom_field_results->data ) ) return [];
+        if( 'array' !== gettype( $custom_field_results->data ) ) return [];
+
+        foreach ( $custom_field_results->data as $custom_field_row ) {
+		    $custom_fields[] = [
+			    'key'   => "custom_{$custom_field_row->key}",
+			    'label' => $custom_field_row->label
+		    ];
+	    }
+
+        return $custom_fields;
+    }
+
+	/**
+	 * Add a segment to a user
+     *
+	 * @param string $api_key
+	 * @param string $id
+	 * @param array $segments
+	 * @param string $form_id
+	 *
+	 * @return void
+	 */
+    private function add_user_to_segments( $api_key = '', $id = '', $segments = [], $form_id = '' ) {
+        if( empty( $api_key ) ) return;
+        if( empty( $id ) ) return;
+        if( empty( $segments ) ) return;
+        if( 'array' !== gettype( $segments ) ) return;
+
+        $api_url = "{$this->api_url}subscribers/{$id}/segments";
+        $args = $this->api_args( $api_key );
+        $body['segment_ids'] = [];
+
+	    foreach ( $segments as $segment ) {
+		    foreach ( $segment as $group_id => $group_name ) {
+                $body['segment_ids'][] = $group_id;
+		    }
+	    }
+        $args['body'] = json_encode( $body );
+
+        $response = wp_remote_post( $api_url, $args );
+
+        // If the API response is an error, log it as an error.
+        if ( is_wp_error( $response ) ) {
+            wpforms_log(
+                'Flodesk - Add segments to user',
+                sprintf(
+                    'API Error: %s',
+                    $response->get_error_message()
+                ),
+                array(
+                    'type'    => array( 'provider', 'error' ),
+                    'parent'  => $id,
+                    'form_id' => $form_id,
+                )
+            );
+
+            return;
+        }
+	    // Log successful API response.
+	    wpforms_log(
+		    'Flodesk',
+		    $response,
+		    array(
+			    'type'    => array( 'provider', 'log' ),
+			    'parent'  => $id,
+			    'form_id' => $form_id,
+		    )
+	    );
+    }
 }
 new Integrate_Flodesk_WPForms();
