@@ -230,7 +230,8 @@ class Integrate_Flodesk_WPForms extends WPForms_Provider {
 
 		return $fields[ $id ][ $key ];
 
-	}    
+	}
+
     /**
 	 * Output fields at WPForms > Settings > Integrations > Flodesk,
 	 * allowing the user to enter their Flodesk API Key.
@@ -438,6 +439,8 @@ class Integrate_Flodesk_WPForms extends WPForms_Provider {
 	/**
      * Retrieve custom fields for a provider account.
      *
+     * @since 1.1.0
+     *
 	 * @param $connection_id
 	 * @param $account_id
 	 * @param $list_id
@@ -484,6 +487,8 @@ class Integrate_Flodesk_WPForms extends WPForms_Provider {
 
 	/**
 	 * Add a segment to a user
+     *
+     * @since 1.1.0
      *
 	 * @param string $api_key
 	 * @param string $id

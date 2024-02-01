@@ -34,5 +34,9 @@ WPForms Flodesk Form Settings when editing a WPForms Form at Marketing > Flodesk
 
 ## Changelog
 
+### 1.1.0
+* Added the ability to choose Flodesk segments for a WPForm form
+* Added mapping of custom fields to WPForm fields
+
 ### 1.0.0
 * Initial release
