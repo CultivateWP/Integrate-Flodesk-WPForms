@@ -43,5 +43,12 @@ You can use the free [WPForms Lite](https://wordpress.org/plugins/wpforms-lite/)
 
 == Changelog ==
 
+= 1.1.1 =
+* Only create an array for custom fields if there is at least one custom field.
+
+= 1.1.0 =
+* Added the ability to choose Flodesk segments for a WPForm form
+* Added mapping of custom fields to WPForm fields
+
 = 1.0.0 =
 * Initial release

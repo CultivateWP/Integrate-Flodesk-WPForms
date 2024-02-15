@@ -110,10 +110,6 @@ class Integrate_Flodesk_WPForms extends WPForms_Provider {
 
 			// Iterate through the WPForms Form field to Flodesk field mappings, to build
 			// the API query to subscribe to the Flodesk Form.
-			$body = [
-                'custom_fields' => []
-            ];
-
 			foreach ( $connection['fields'] as $flodesk_field => $wpforms_field ) {
                 // Skip if no Flodesk mapping specified for this WPForms Form field.
 				if ( empty( $wpforms_field ) ) {
@@ -126,6 +122,8 @@ class Integrate_Flodesk_WPForms extends WPForms_Provider {
                 // Handle any forms set to custom fields in Flodesk
                 if( str_starts_with( $flodesk_field, "custom_" ) ) {
                     if( empty( $value ) ) continue;
+                    if( empty( $body['custom_fields'] ) ) $body['custom_fields'] = [];
+
                     $property_name = substr( $flodesk_field, 7 );
                     $body['custom_fields'][$property_name] = $value;
                 }
@@ -151,6 +149,8 @@ class Integrate_Flodesk_WPForms extends WPForms_Provider {
 			if ( ! empty( $providers[ $this->slug ][ $connection['account_id'] ]['api'] ) ) {
 				$args = $this->api_args( $providers[ $this->slug ][ $connection['account_id'] ]['api'] );
 				$args['body'] = json_encode( $body );
+
+                ray( $args['body'] );
 
                 $response = wp_remote_post( $this->api_url . 'subscribers', $args );
 
