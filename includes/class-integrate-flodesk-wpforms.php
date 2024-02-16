@@ -150,8 +150,6 @@ class Integrate_Flodesk_WPForms extends WPForms_Provider {
 				$args = $this->api_args( $providers[ $this->slug ][ $connection['account_id'] ]['api'] );
 				$args['body'] = json_encode( $body );
 
-                ray( $args['body'] );
-
                 $response = wp_remote_post( $this->api_url . 'subscribers', $args );
 
                 // If the API response is an error, log it as an error.
