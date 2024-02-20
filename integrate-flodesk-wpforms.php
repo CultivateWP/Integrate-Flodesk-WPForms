@@ -34,7 +34,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'INTEGRATE_FLODESK_WPFORMS_FILE', plugin_basename( __FILE__ ) );
 define( 'INTEGRATE_FLODESK_WPFORMS_URL', plugin_dir_url( __FILE__ ) );
 define( 'INTEGRATE_FLODESK_WPFORMS_PATH', __DIR__ );
-define( 'INTEGRATE_FLODESK_WPFORMS_VERSION', '1.0.0' );
+define( 'INTEGRATE_FLODESK_WPFORMS_VERSION', '1.1.1' );
 
 /**
  * Load the class
