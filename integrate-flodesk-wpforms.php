@@ -3,7 +3,7 @@
  * Plugin Name: Integrate Flodesk and WPForms
  * Plugin URI:  https://cultivatewp.com/our-plugins/integrate-flodesk-wpforms/
  * Description: Create Flodesk signup forms using WPForms
- * Version:     1.0.0
+ * Version:     1.1.1
  * Author:      CultivateWP
  * Author URI:  https://cultivatewp.com
  * Text Domain: integrate-flodesk-wpforms
@@ -34,7 +34,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'INTEGRATE_FLODESK_WPFORMS_FILE', plugin_basename( __FILE__ ) );
 define( 'INTEGRATE_FLODESK_WPFORMS_URL', plugin_dir_url( __FILE__ ) );
 define( 'INTEGRATE_FLODESK_WPFORMS_PATH', __DIR__ );
-define( 'INTEGRATE_FLODESK_WPFORMS_VERSION', '1.0.0' );
+define( 'INTEGRATE_FLODESK_WPFORMS_VERSION', '1.1.1' );
 
 /**
  * Load the class

@@ -4,7 +4,7 @@ Donate link: https://cultivatewp.com
 Tags: form, wpforms, flodesk, email, marketing
 Requires at least: 5.0
 Tested up to: 6.3
-Stable tag: 1.0.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,6 +42,13 @@ You can use the free [WPForms Lite](https://wordpress.org/plugins/wpforms-lite/)
 2. WPForms Flodesk Form Settings when editing a WPForms Form at Marketing > Flodesk
 
 == Changelog ==
+
+= 1.1.1 =
+* Only create an array for custom fields if there is at least one custom field.
+
+= 1.1.0 =
+* Added the ability to choose Flodesk segments for a WPForm form
+* Added mapping of custom fields to WPForm fields
 
 = 1.0.0 =
 * Initial release
