@@ -403,7 +403,7 @@ class Integrate_Flodesk_WPForms extends WPForms_Provider {
 
         $providers = get_option( 'wpforms_providers', [] );
         $args = $this->api_args( $providers[ $this->slug ][ $account_id ]['api'] );
-        $response = wp_remote_get( "{$this->api_url}segments", $args );
+        $response = wp_remote_get( "{$this->api_url}segments?per_page=100", $args );
         if( is_wp_error( $response ) ) {
             wpforms_log(
                 'Flodesk',
