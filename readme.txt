@@ -43,6 +43,9 @@ You can use the free [WPForms Lite](https://wordpress.org/plugins/wpforms-lite/)
 
 == Changelog ==
 
+= 1.2.0 =
+* Increase the limit for the number of segments retrieved by the API query.
+
 = 1.1.1 =
 * Only create an array for custom fields if there is at least one custom field.
 
