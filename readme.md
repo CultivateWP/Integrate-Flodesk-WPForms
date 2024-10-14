@@ -34,6 +34,9 @@ WPForms Flodesk Form Settings when editing a WPForms Form at Marketing > Flodesk
 
 ## Changelog
 
+### 1.2.0
+* Receive updates from GitHub
+
 ### 1.1.1
 * Only create an array for custom fields if there is at least one custom field.
 

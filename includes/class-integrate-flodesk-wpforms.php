@@ -80,6 +80,15 @@ class Integrate_Flodesk_WPForms extends WPForms_Provider {
 
 		if ( is_admin() ) {
 			add_filter( "wpforms_providers_provider_settings_formbuilder_display_content_default_screen_{$this->slug}", array( $this, 'builder_settings_default_content' ) );
+
+			// Updater
+			require INTEGRATE_FLODESK_WPFORMS_PATH . 'includes/updater/plugin-update-checker.php';
+			$myUpdateChecker = \YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
+				'https://github.com/cultivatewp/integrate-flodesk-wpforms/',
+				INTEGRATE_FLODESK_WPFORMS_FILE, //Full path to the main plugin file or functions.php.
+				'integrate-flodesk-wpforms'
+			);
+			$myUpdateChecker->setBranch('master');
 		}
 
     }
