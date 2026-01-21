@@ -401,46 +401,64 @@ class Integrate_Flodesk_WPForms extends WPForms_Provider {
 	 * @return mixed array or error object.
 	 */
 	public function api_groups( $connection_id = '', $account_id = '', $list_id = '' ) {
-		$groupsets = [
-			'groupset' => [
-				'name'   => "Groupset_{$list_id}",
-				'id'     => "ID_{$list_id}",
-				'groups' => []
-			]
+
+	$groupsets = [
+		'groupset' => [
+			'name'   => "Groupset_{$list_id}",
+			'id'     => "ID_{$list_id}",
+			'groups' => [],
+		],
+	];
+
+	if ( empty( $account_id ) ) {
+		return $this->error( 'Problem retrieving groups. No account ID set.' );
+	}
+
+	$providers = get_option( 'wpforms_providers', [] );
+	if ( empty( $providers[ $this->slug ][ $account_id ]['api'] ) ) {
+		return [];
+	}
+
+	$args = $this->api_args( $providers[ $this->slug ][ $account_id ]['api'] );
+
+	$page        = 1;
+	$per_page    = 20; // Flodesk default
+	$all_segments = [];
+
+	do {
+		$response = wp_remote_get(
+			"{$this->api_url}segments?page={$page}",
+			$args
+		);
+
+		if ( is_wp_error( $response ) || empty( $response['body'] ) ) {
+			break;
+		}
+
+		$decoded = json_decode( $response['body'] );
+
+		if ( empty( $decoded->data ) || ! is_array( $decoded->data ) ) {
+			break;
+		}
+
+		$all_segments = array_merge( $all_segments, $decoded->data );
+
+		$page++;
+
+	} while ( count( $decoded->data ) === $per_page );
+
+	foreach ( $all_segments as $segment ) {
+		if ( empty( $segment->id ) || empty( $segment->name ) ) {
+			continue;
+		}
+
+		$groupsets['groupset']['groups'][] = [
+			'id'   => $segment->id,
+			'name' => $segment->name,
 		];
-        if( empty( $account_id ) ) return $this->error( 'Problem retrieving groups. No account ID set.' );
+	}
 
-        $providers = get_option( 'wpforms_providers', [] );
-        $args = $this->api_args( $providers[ $this->slug ][ $account_id ]['api'] );
-        $response = wp_remote_get( "{$this->api_url}segments", $args );
-        if( is_wp_error( $response ) ) {
-            wpforms_log(
-                'Flodesk',
-                sprintf(
-                    'API Error: %s',
-                    $response->get_error_message()
-                ),
-                array(
-                    'type'    => array( 'group', 'error' )
-                )
-            );
-
-            return [];
-        }
-        if( empty( $response['body'] ) ) return [];
-        if( 'string' !== gettype( $response['body'] ) ) return [];
-        $group_results = json_decode( $response['body'] );
-        if( empty( $group_results->data ) ) return [];
-        if( 'array' !== gettype( $group_results->data ) ) return [];
-
-        foreach( $group_results->data as $group_row ) {
-	        $groupsets['groupset']['groups'][] = [
-		        'id'   => $group_row->id,
-		        'name' => $group_row->name
-	        ];
-        }
-
-        return $groupsets;
+	return $groupsets;
 	}
 
 	/**
