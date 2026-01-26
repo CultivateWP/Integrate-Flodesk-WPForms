@@ -34,6 +34,9 @@ WPForms Flodesk Form Settings when editing a WPForms Form at Marketing > Flodesk
 
 ## Changelog
 
+### 1.3.0
+* Add pagination support to fetch all Flodesk segments (props @yamilrosa)
+
 ### 1.2.0
 * Receive updates from GitHub
 

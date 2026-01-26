@@ -4,7 +4,7 @@ Donate link: https://cultivatewp.com
 Tags: form, wpforms, flodesk, email, marketing
 Requires at least: 5.0
 Tested up to: 6.6
-Stable tag: 1.2
+Stable tag: 1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,6 +42,9 @@ You can use the free [WPForms Lite](https://wordpress.org/plugins/wpforms-lite/)
 2. WPForms Flodesk Form Settings when editing a WPForms Form at Marketing > Flodesk
 
 == Changelog ==
+
+= 1.3.0 = 
+* Add pagination support to fetch all Flodesk segments (props @yamilrosa)
 
 = 1.2.0 = 
 * Receive updates from GitHub
